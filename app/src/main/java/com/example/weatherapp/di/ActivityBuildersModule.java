@@ -1,6 +1,7 @@
 package com.example.weatherapp.di;
 
-import com.example.weatherapp.AuthActivity;
+import com.example.weatherapp.ui.auth.AuthActivity;
+import com.example.weatherapp.ui.auth.AuthViewModel;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -8,6 +9,8 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ActivityBuildersModule {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(
+            modules = {AuthViewModel.class}
+    )
     abstract AuthActivity contributeAuthActivity();
 }
