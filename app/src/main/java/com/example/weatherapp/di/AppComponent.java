@@ -10,13 +10,15 @@ import dagger.android.AndroidInjectionModule;
 import dagger.android.AndroidInjector;
 
 @Component(
-        modules = {AndroidInjectionModule.class,
+        modules = {
+                AndroidInjectionModule.class,
                     ActivityBuildersModule.class,
                 AppModule.class,
                 ViewModelFactoryModule.class
         }
 )
 public interface AppComponent extends AndroidInjector<BaseApplication> {
+
     @Component.Builder
     interface Builder{
         @BindsInstance

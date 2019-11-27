@@ -1,8 +1,9 @@
-package com.example.weatherapp.ui.auth;
+package com.example.weatherapp.di.auth;
 
 import androidx.lifecycle.ViewModel;
 
 import com.example.weatherapp.di.annotation.ViewModelKey;
+import com.example.weatherapp.ui.auth.AuthViewModel;
 
 import dagger.Binds;
 import dagger.Module;
@@ -14,4 +15,5 @@ public abstract class AuthViewModelsModule {
     @IntoMap
     @ViewModelKey(AuthViewModel.class)
     public abstract ViewModel bindAuthViewModel(AuthViewModel authViewModel);
+
 }

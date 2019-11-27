@@ -1,4 +1,4 @@
-package com.example.weatherapp.di.anotation;
+package com.example.weatherapp.di.annotation;
 
 import androidx.lifecycle.ViewModel;
 
