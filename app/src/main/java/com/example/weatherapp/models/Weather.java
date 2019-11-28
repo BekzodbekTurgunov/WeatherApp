@@ -3,7 +3,10 @@ package com.example.weatherapp.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class Weather {
+
     @SerializedName("id")
     @Expose
     private int id;
@@ -16,6 +19,7 @@ public class Weather {
     @Expose
     private String description;
 
+
     public Weather(int id, String main, String description) {
         this.id = id;
         this.main = main;
@@ -24,6 +28,7 @@ public class Weather {
 
     public Weather() {
     }
+
 
     public int getId() {
         return id;

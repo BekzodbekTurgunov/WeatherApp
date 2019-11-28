@@ -26,11 +26,11 @@
         android:textColor="#000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/user_id_input"
+        android:id="@+id/wheather_city_input"
         android:layout_marginTop="20dp"/>
 
     <Button
-        app:layout_constraintTop_toBottomOf="@+id/user_id_input"
+        app:layout_constraintTop_toBottomOf="@+id/wheather_city_input"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="match_parent"

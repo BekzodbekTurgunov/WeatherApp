@@ -2,9 +2,12 @@ package com.example.weatherapp.ui.auth;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.weatherapp.models.Weather;
+import com.example.weatherapp.models.Test;
 import com.example.weatherapp.network.AuthApi;
 
 import javax.inject.Inject;
@@ -20,27 +23,29 @@ public class AuthViewModel extends ViewModel {
 
     private final AuthApi authApi;
 
+    private MediatorLiveData<Test> weather = new MediatorLiveData<>();
     @Inject
     public AuthViewModel(AuthApi authApi){
         this.authApi = authApi;
-        Log.d(TAG, "AuthViewModel: Model is working ...");
+
         authApi.getWeather("bukhara")
                 .toObservable()
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<Weather>() {
+                .subscribe(new Observer<Test>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        
+
                     }
 
                     @Override
-                    public void onNext(Weather weather) {
-                        Log.d(TAG, "onNext: " + weather.getDescription());
+                    public void onNext(Test test) {
+                        Log.d(TAG, "onNext: Success");
+                        Log.d(TAG, "onNext: " + test.getWeather().get(0).getDescription());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "onError: Eror...",e );
+                        Log.e(TAG, "onError: ",e );
                     }
 
                     @Override
@@ -48,5 +53,23 @@ public class AuthViewModel extends ViewModel {
 
                     }
                 });
+    }
+    public void authenticationWithCityName(String city){
+        final LiveData<Test> source = LiveDataReactiveStreams.fromPublisher(
+                authApi.getWeather(city)
+                .subscribeOn(Schedulers.io())
+
+        );
+        weather.addSource(source, new androidx.lifecycle.Observer<Test>() {
+            @Override
+            public void onChanged(Test weathers) {
+                weather.setValue(weathers); // handle..
+                weather.removeSource(source);
+            }
+        });
+
+    }
+    public LiveData<Test> observeWeather(){
+        return weather;
     }
 }
