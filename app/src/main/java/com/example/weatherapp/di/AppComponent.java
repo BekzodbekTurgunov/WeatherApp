@@ -3,6 +3,7 @@ package com.example.weatherapp.di;
 import android.app.Application;
 
 import com.example.weatherapp.BaseApplication;
+import com.example.weatherapp.SessionManager;
 
 import javax.inject.Singleton;
 
@@ -20,6 +21,8 @@ import dagger.android.AndroidInjector;
         }
 )
 public interface AppComponent extends AndroidInjector<BaseApplication> {
+
+    SessionManager sessionManager();
 
     @Component.Builder
     interface Builder{

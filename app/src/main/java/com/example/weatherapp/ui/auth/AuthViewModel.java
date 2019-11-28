@@ -7,14 +7,14 @@ import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.weatherapp.models.Test;
+import com.example.weatherapp.SessionManager;
+import com.example.weatherapp.models.Data;
 import com.example.weatherapp.network.AuthApi;
 
 import javax.inject.Inject;
 
 import dagger.Module;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 @Module
@@ -22,23 +22,61 @@ public class AuthViewModel extends ViewModel {
     private static final String TAG = "AuthViewModel";
 
     private final AuthApi authApi;
+    private SessionManager sessionManager;
 
-    private MediatorLiveData<Test> weather = new MediatorLiveData<>();
     @Inject
-    public AuthViewModel(AuthApi authApi){
+    public AuthViewModel(AuthApi authApi, SessionManager sessionManager){
+        this.sessionManager = sessionManager;
         this.authApi = authApi;
 
-        authApi.getWeather("bukhara")
+    }
+    public void authenticationWithCityName(String city){
+        Log.d(TAG, "authenticationWithCityName: attenpting to login");
+        sessionManager.authenticationWithCityName(queryWheatherCityName(city));
+       
+    }
+    private LiveData<AuthResource<Data>> queryWheatherCityName(String city){
+        return LiveDataReactiveStreams.fromPublisher(
+                authApi.getWeather(city)
+                        .onErrorReturn(new Function<Throwable, Data>() {
+                            @Override
+                            public Data apply(Throwable throwable) throws Exception {
+                                Data errorData =  new Data();
+                                errorData.setWeather(null);
+
+                                Log.d(TAG, "apply: ERROR"+ throwable.getMessage());
+                                return errorData;
+                            }
+                        })
+                        .map(new Function<Data, AuthResource<Data>>() {
+                            @Override
+                            public AuthResource<Data> apply(Data data) throws Exception {
+                                if (data.getWeather()==null){
+                                    return AuthResource.error("Could not authenticate", (Data)null);
+                                }
+                                return AuthResource.authenticated(data);
+                            }
+                        })
+                        .subscribeOn(Schedulers.io()));
+    }
+    public LiveData<AuthResource<Data>> observeWeather(){
+        return sessionManager.getData();
+    }
+}
+
+
+
+  /* authApi.getWeather("bukhara")
                 .toObservable()
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<Test>() {
+                .subscribe(new Observer<Data>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(Test test) {
+                    public void onNext(Data test) {
                         Log.d(TAG, "onNext: Success");
                         Log.d(TAG, "onNext: " + test.getWeather().get(0).getDescription());
                     }
@@ -52,24 +90,4 @@ public class AuthViewModel extends ViewModel {
                     public void onComplete() {
 
                     }
-                });
-    }
-    public void authenticationWithCityName(String city){
-        final LiveData<Test> source = LiveDataReactiveStreams.fromPublisher(
-                authApi.getWeather(city)
-                .subscribeOn(Schedulers.io())
-
-        );
-        weather.addSource(source, new androidx.lifecycle.Observer<Test>() {
-            @Override
-            public void onChanged(Test weathers) {
-                weather.setValue(weathers); // handle..
-                weather.removeSource(source);
-            }
-        });
-
-    }
-    public LiveData<Test> observeWeather(){
-        return weather;
-    }
-}
+                });*/
